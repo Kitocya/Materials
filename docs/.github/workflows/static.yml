@@ -28,7 +28,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '../../'  # 親ディレクトリ（リポジトリのルートディレクトリ）を指定
+          path: '../../'  # 親ディレクトリ（ルートディレクトリ）を指定
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
