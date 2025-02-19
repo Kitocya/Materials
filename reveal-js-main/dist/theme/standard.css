@@ -103,14 +103,14 @@
   
   h1 {
     position: absolute;
-    transform: translate(-60%, 100%); /* 位置調整 */
+    transform: translate(-60%, 50%); /* 位置調整 */
   }
   
  
   h6 {
     font-size: 0.6em; /* 文字サイズを小さく設定（必要に応じて調整してください） */
     position: absolute;
-    transform: translate(0%, 0%); /* 文字の位置を調整 */
+    transform: translate(-120%, 500%); /* 文字の位置を調整 */
   }
  
   p {
