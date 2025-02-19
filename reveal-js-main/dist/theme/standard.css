@@ -106,7 +106,6 @@
     transform: translate(-60%, 50%); /* 位置調整 */
   }
   
- 
   h6 {
     font-size: 0.6em; /* 文字サイズを小さく設定（必要に応じて調整してください） */
     position: absolute;
