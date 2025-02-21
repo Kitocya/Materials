@@ -4,11 +4,11 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>ガイダンス</title>
 
 		<link rel="stylesheet" href="../reveal-js-main/dist/reset.css">
 		<link rel="stylesheet" href="../reveal-js-main/dist/reveal.css">
-		<link rel="stylesheet" href="../reveal-js-main/dist/theme/white.css">
+		<link rel="stylesheet" href="../reveal-js-main/dist/theme/darkblue.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="../reveal-js-main/plugin/highlight/monokai.css">
@@ -17,17 +17,10 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h1>
-                      Slide1
-					</h1>
-					<h6>
-					<ul>
-						<li>1つめの項目</li>
-						<li>2つめの項目</li>
-						<li>3つめの項目</li>
-					  </ul>
-					</h6>
-
+					<h1>物理 ガイダンス</h1>
+					<h5>ほうじ茶</h5>
+					<img src=".png">
+					<p>本日のスライド</p>
 				</section>
 				<section>Slide 2</section>
 			</div>
@@ -43,9 +36,13 @@
 			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
-
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				transition: 'fade',
+	            controls: true,
+	            progress: true,
+	            history: true,
+	            center: true,
+		    // Learn about plugins: https://revealjs.com/plugins/
+	            plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
 			});
 		</script>
 	</body>
