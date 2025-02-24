@@ -12,6 +12,12 @@
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="../reveal-js-master/plugin/highlight/monokai.css">
+
+		<script>
+			Reveal.initialize({
+				hash: true
+			});
+		</script>
 		  
 	</head>
 	<body>
@@ -136,6 +142,7 @@
 </section>
 
 <section>
+	<div id="threejs-container"></div>
 	<script src="../Three-js-master/node_modules/esbuild/lib/main.js"></script>
 </section>
 
@@ -150,6 +157,7 @@
 		<script src="../reveal-js-master/plugin/notes/notes.js"></script>
 		<script src="../reveal-js-master/plugin/markdown/markdown.js"></script>
 		<script src="../reveal-js-master/plugin/highlight/highlight.js"></script>
+		<script src="../Three-js-master/node_modules/three/src/Three.js"></script>
 
 		<script>
 			// More info about initialization & config:
