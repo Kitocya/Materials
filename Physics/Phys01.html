@@ -12,6 +12,9 @@
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="../reveal-js-master/plugin/highlight/monokai.css">
+
+		<script src="../Three-js-master/node_modules/three/build/three.min.js"></script>
+		  
 	</head>
 	<body>
 		<div class="reveal">
@@ -135,49 +138,10 @@
 </section>
 
 <section>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        // シーンの作成
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
 
-        // 鉄球の作成
-        const ironGeometry = new THREE.SphereGeometry(1, 32, 32);
-        const ironMaterial = new THREE.MeshBasicMaterial({ color: 0x999999 });
-        const ironBall = new THREE.Mesh(ironGeometry, ironMaterial);
-        scene.add(ironBall);
-
-        // ビー玉の作成
-        const marbleGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-        const marbleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const marbleBall = new THREE.Mesh(marbleGeometry, marbleMaterial);
-        scene.add(marbleBall);
-
-        // カメラの位置
-        camera.position.z = 5;
-
-        // 初期位置
-        ironBall.position.y = 5;
-        marbleBall.position.y = 5;
-
-        // 重力設定
-        const gravity = -0.05;
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // 落下アニメーション
-            ironBall.position.y += gravity;
-            marbleBall.position.y += gravity;
-
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
 </section>
+
+<section></section>
 
 		<!--これ以下は変更なし．-->
 
@@ -188,6 +152,8 @@
 		<script src="../reveal-js-master/plugin/notes/notes.js"></script>
 		<script src="../reveal-js-master/plugin/markdown/markdown.js"></script>
 		<script src="../reveal-js-master/plugin/highlight/highlight.js"></script>
+		<script src="../Three-js-master/node_modules/three/src/Three.js"></script>
+
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
