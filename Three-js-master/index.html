@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="en.png">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>WebGL through Three JS</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme/default.css">
+    <link rel="stylesheet" href="css/custom.css">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="css/gh-fork-ribbon.css">
+
+    <script>
+      // If the query includes 'print-pdf' we'll use the PDF print sheet
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if IE]>
+    <link rel="stylesheet" href="css/gh-fork-ribbon.ie.css">
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="github-fork-ribbon-wrapper left-bottom">
+      <div class="github-fork-ribbon">
+          <a href="https://github.com/dimroc/reveal.js-threejs">Fork me on GitHub</a>
+      </div>
+    </div>
+
+    <div class="reveal">
+
+      <!-- Used to fade in a background when a specific slide state is reached -->
+      <div class="state-background"></div>
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>WebGL with Three JS</h1>
+          <h3>Real time rendering with javascript</h3>
+          <canvas data-sample="spinning_wireframe_torus"></canvas>
+        </section>
+
+        <section>
+          <h2>Rendering Techniques</h2>
+          <ul>
+            <li>
+            Rasterization
+            <blockquote style="width:90%">
+              The task of taking an image described in a vector graphics format (shapes)
+              and converting it into a raster image (pixels or dots)
+            </blockquote>
+            </li>
+            <br/>
+            <br/>
+            <li>Ray Casting</li>
+            <li>Ray Tracing</li>
+          </ul>
+        </section>
+
+        <section>
+          <section>
+            <h3>How do we get from<br/>vertices to a shape</h3>
+            <img class="float_left" style="display:inline" src="images/Vertices.png">
+            <div class="float_left" style="line-height: 8; padding: 20px">to</div>
+            <canvas data-sample="spinning_wireframe_cube" class="float_left" style="display:inline"></canvas>
+            <div class="float_left" style="line-height: 5; padding: 20px">?</div>
+          </section>
+
+          <section>
+            <h2>What is a vertex?</h2>
+            <img class="white_bg" src="http://obviam.net/wp-content/uploads/2011/01/Vertices.png">
+          </section>
+
+          <section>
+            <h2>Model Space and World Space</h2>
+            <img src="http://robertokoci.com/images/posts/graphics/game/programming/matrix-unveiled/ObjectWorldSpace.png">
+            <!-- <img class="float_left" src="http://www.simulshop.com/product/nemethdesigns/ec135/tn_fsx2008-49-47.jpg" style="height: 70%"> -->
+          </section>
+
+          <section>
+            <h2>View Space</h2>
+            <img src="http://robertokoci.com/images/posts/graphics/game/programming/matrix-unveiled/WorldViewSpace.png">
+          </section>
+
+          <section>
+            <h2>Projection Space</h2>
+            <img src="http://robertokoci.com/images/posts/graphics/game/programming/matrix-unveiled/ProjectionMatrix.png">
+          </section>
+
+          <section>
+            <h2>End in 2D</h2>
+            <img src="images/3dproj01.gif">
+            <!-- <img class="white_bg" src="http://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Axonometric_projection.svg/467px-Axonometric_projection.svg.png"> -->
+          </section>
+
+          <section>
+           <h2>Vertices to a shape</h2>
+            <img class="float_left" style="display:inline" src="images/Vertices.png">
+            <div class="float_left" style="line-height: 8; padding: 20px">to</div>
+            <canvas data-sample="spinning_wireframe_cube" class="float_left" style="display:inline"></canvas>
+          </section>
+
+          <section>
+            <h2>But how do we ...</h2>
+            <br/>
+            <h3>transform between spaces?</h3>
+            <img src="http://robertokoci.com/images/posts/graphics/game/programming/matrix-unveiled/ObjectWorldSpace.png">
+            <br/>
+            <blockquote style="width:100%">Model -&gt; World -&gt; View -&gt; Projection Space</blockquote>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Welcome to Linear Algebra</h2>
+            <img src="http://storiesbywilliams.files.wordpress.com/2012/05/transport.jpg">
+          </section>
+
+          <section>
+            <h3>2D Vertex, meet Matrix!</h3>
+            <p>Now multiply...</p>
+            <img class="float_left" src="http://tutorial.math.lamar.edu/Classes/LinAlg/LinearTransformations_files/image002.gif">
+            <br/>
+            <ol>
+              <li><img class="white_bg" src="images/matrix_multiplication_x_axis_start.png"></li>
+              <li class="fragment">
+                <img class="white_bg" src="images/matrix_multiplication_x_axis_x.png">
+                ( 1 * x ) + ( 0 * y ) = x
+              </li>
+              <li class="fragment">
+                <img class="white_bg" src="images/matrix_multiplication_x_axis_y.png">
+                ( 0 * x ) + ( -1 * y ) = -y
+              </li>
+            </ol>
+          </section>
+
+          <section>
+            <h3>Transformations</h3>
+            <br/>
+            <img class="float_left" src="images/SRT_transformations.png">
+            <ul style="width:100px;">
+              <li>
+                identity:<br/>
+                <img class="white_bg" style="width: 200px" src="images/identity_matrix.png">
+              </li>
+
+              <li>
+                scaling:<br/>
+                <img class="white_bg" style="width: 200px" src="http://upload.wikimedia.org/math/2/6/a/26a088adf02ba09dc958acba0e81a3c3.png">
+                <br/>
+              </li>
+
+              <li>
+                rotation:<br/>
+                <img class="white_bg" style="width: 200px" src="http://upload.wikimedia.org/math/4/b/d/4bd8fd7253c5bbd65c2e9f8fb7220b19.png">
+                <br/>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Projection</h2>
+            <br/>
+            <pre style="width: 40%" class="math float_left">
+  [1, 0, 0] [x]   [x]
+  [0, 1, 0] [y] = [y]
+  [0, 0, 0] [z]   [0] </pre>
+            <p>* We lose a dimension!</p>
+            <img src="images/3dproj01.gif">
+          </section>
+
+          <section>
+            <h2>Composite Transformation</h2>
+            <p>Putting it all together</p>
+            <img class="white_bg" src="http://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Axonometric_projection.svg/467px-Axonometric_projection.svg.png">
+            <blockquote>World_View_Projection_Matrix =<br/> World * View * Projection</blockquote>
+          </section>
+
+          <section>
+            <h2>Transformations + Projection</h2>
+            <img class="float_left" style="display:inline" src="images/Vertices.png">
+            <div class="float_left" style="line-height: 8; padding: 20px">to</div>
+            <canvas data-sample="spinning_wireframe_cube" style="display:inline"></canvas>
+            <p class="medium" style="font-size:24px;">----------------------------------
+            <br/>
+            Model * World_View_Projection_Matrix</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h3>How do we get from<br/>a shape to colored pixels</h3>
+            <br/>
+            <br/>
+            <canvas data-sample="spinning_wireframe_cube" class="float_left"></canvas>
+            <div class="float_left" style="line-height: 8; padding: 20px">to</div>
+            <canvas data-sample="lighted_spinning_textured_cube" class="float_left"></canvas>
+            <div class="float_left" style="line-height: 8; padding: 20px">?</div>
+          </section>
+
+          <section>
+            <h2>Rasterization: Shapes -> Pixels</h2>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Rasterisation-triangle_example.svg/450px-Rasterisation-triangle_example.svg.png">
+          </section>
+
+          <section>
+            <h2>Texture: UV Mapping</h2>
+            <p>Getting the value of the color...<p>
+            <img src="http://www.bcu.ac.uk/_media/img/nti/gamer_camp/blog_postings/UvMapping.jpg">
+          </section>
+
+          <section>
+            <h2>Lighting</h2>
+            <p>Getting the strength of the color...</p>
+            <br/>
+            <h3>Ambient, Diffuse, Specular</h3>
+            <canvas class="float_left" data-sample="lighted_ambient_sphere"></canvas>
+            <canvas class="float_left" data-sample="lighted_diffuse_sphere"></canvas>
+            <canvas class="float_left" data-sample="lighted_specular_sphere"></canvas>
+          </section>
+
+          <section>
+            <h2>Materials</h2>
+            <canvas class="float_left" data-sample="lighted_sphere"></canvas>
+            <canvas data-sample="lighted_textured_sphere"></canvas>
+            <p>Combining all lighting and textures for the final color</p>
+          </section>
+
+          <section>
+            <h2>
+              Coloring the pixels:<br/>
+              Texture and Lighting
+            </h2>
+            <br/>
+            <canvas data-sample="spinning_wireframe_cube" class="float_left"></canvas>
+            <img class="float_left" style="width: 20%"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Rasterisation-triangle_example.svg/450px-Rasterisation-triangle_example.svg.png">
+            <canvas data-sample="lighted_spinning_textured_cube" class="float_left"></canvas>
+          </section>
+
+          <section>
+            <h2>But how do we ...</h2>
+            <br/>
+            <br/>
+            <h3>figure out the amount of light?</h3>
+            <blockquote>Putting the rgba in a pixel's RGBA</blockquote>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Welcome BACK to Linear Algebra</h2>
+            <br/>
+            <img src="http://cronwtf.github.com/images/wtf.jpg">
+          </section>
+
+          <section>
+            <h2>The Normal</h2>
+            <img class="white_bg" src="https://encrypted-tbn3.google.com/images?q=tbn:ANd9GcSQyYxnsLVkIT5QpVBGJ00IDOcIrLPMPUXIyabQYuXZQxOuIGKN">
+          </section>
+
+          <section>
+            <h2>Lighting</h2>
+            <img src="images/shader_vectors.gif">
+          </section>
+
+          <section>
+            <h2>The Dot Product</h2>
+            <!-- <img class="white_bg" src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Dot_Product.svg/300px-Dot_Product.svg.png"> -->
+            <img class="white_bg" src="http://cdn.wolfire.com/blog/linear/dotsimple.jpg">
+          </section>
+
+          <section>
+            <h2>Lighting</h2>
+            <img class="white_bg" src="http://math.hws.edu/graphicsnotes/c4/light_eq.png">
+            <br/>
+            <br/>
+            <ul>
+              <li>N * L = dot product</li>
+              <li>color.rgb * dot product = amount of color</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Lighting Demystified (somewhat)</h2>
+            <canvas data-sample="lighted_sphere"></canvas>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Graphic Pipelines: How it started</h2>
+            <h3>Software Rendering</h3>
+            <img style="width: 480px;" src="http://1.bp.blogspot.com/-tQMjfiveb88/T5HvOfXc63I/AAAAAAAAB38/P_Nmtyw7-v8/s1600/prince-of-persia.gif">
+            <ul>
+              <li>Entirely done on CPU</li>
+              <li>Unaided by graphics hardware</li>
+              <li>Ultimate flexibility</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>How it was: Fixed Function Pipeline</h3>
+            <img src="http://cdn.steampowered.com/v/gfx/apps/2310/0000002448.600x338.jpg?t=1343157013">
+            <img src="http://www.techspot.com/reviews/hardware/voodoo3-3000/box_p.jpg">
+            <small style="font-size: 10px; display: block;">I couldn't find an image of a voodoo 1 card</small>
+          </section>
+
+          <section>
+            <h3>How it was: Fixed Function Pipeline</h3>
+            <img src="http://www.many-core.group.cam.ac.uk/platforms/pipeline_big.png">
+            <ul>
+              <li>Introduction of GPU hardware support</li>
+              <li>Sacrificed flexibility for speed</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>The Graphics Card</h2>
+            <img class="white_bg" src="http://www.sjbaker.org/wiki/images/thumb/3/31/Graphics_pipeline.png/800px-Graphics_pipeline.png">
+          </section>
+
+          <section>
+            <h3>How it is: Programmable Graphics Pipeline</h3>
+            <!-- <img src="http://chrisingradschool.files.wordpress.com/2010/03/screen-shot-2010-03-09-at-2-13-26-pm.png?w=600&h=279"> -->
+            <img src="http://www.many-core.group.cam.ac.uk/platforms/pipeline_big.png">
+          </section>
+
+          <section>
+            <h3>How it is: Programmable Graphics Pipeline</h3>
+            <img src="http://chrisingradschool.files.wordpress.com/2010/03/screen-shot-2010-03-09-at-2-13-26-pm.png?w=600&h=279">
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>What is WebGL?</h1>
+            <p>OpenGL ES2.0 port built into the &lt;canvas&gt; DOM element</p>
+            <canvas data-sample="webgl_spinning_colored_cube" style="display:inline"></canvas>
+          </section>
+
+          <section>
+          <h3>wtf</h3>
+            <pre class="supersmall float_left" style="width:50%"><code>
+function init(scene) {
+  // Initialize
+  var gl = WebGLUtils.setupWebGL(scene.canvas);
+  if (!gl) {
+    return;
+  }
+
+  scene.program = simpleSetup(
+    gl,
+    // The ids of the vertex and fragment shaders
+    "vshader", "fshader",
+    // The vertex attribute names used by the shaders.
+    // The order they appear here corresponds to their index
+    // used later.
+    [ "vNormal", "vColor", "vPosition"],
+    // The clear color and depth values
+    [ 0, 0, 0, 0 ], 10000);
+
+  // Set up a uniform variable for the shaders
+  gl.uniform3f(gl.getUniformLocation(scene.program, "lightDir"), 0, 0, 1);
+
+  // Create a box. On return 'gl' contains a 'box' property with
+  // the BufferObjects containing the arrays for vertices,
+  // normals, texture coords, and indices.
+  scene.box = makeBox(gl);
+
+  // Set up the array of colors for the cube's faces
+  var colors = new Uint8Array(
+    [  0, 0, 1, 1,   0, 0, 1, 1,   0, 0, 1, 1,   0, 0, 1, 1,     // v0-v1-v2-v3 front
+      1, 0, 0, 1,   1, 0, 0, 1,   1, 0, 0, 1,   1, 0, 0, 1,     // v0-v3-v4-v5 right
+      0, 1, 0, 1,   0, 1, 0, 1,   0, 1, 0, 1,   0, 1, 0, 1,     // v0-v5-v6-v1 top
+      1, 1, 0, 1,   1, 1, 0, 1,   1, 1, 0, 1,   1, 1, 0, 1,     // v1-v6-v7-v2 left
+      1, 0, 1, 1,   1, 0, 1, 1,   1, 0, 1, 1,   1, 0, 1, 1,     // v7-v4-v3-v2 bottom
+      0, 1, 1, 1,   0, 1, 1, 1,   0, 1, 1, 1,   0, 1, 1, 1 ]    // v4-v7-v6-v5 back
+  );
+
+  // Set up the vertex buffer for the colors
+  scene.box.colorObject = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.box.colorObject);
+  gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+
+  // Create some matrices to use later and save their locations in the shaders
+  scene.mvMatrix = new J3DIMatrix4();
+  scene.u_normalMatrixLoc = gl.getUniformLocation(scene.program, "u_normalMatrix");
+  scene.normalMatrix = new J3DIMatrix4();
+  scene.u_modelViewProjMatrixLoc =
+    gl.getUniformLocation(scene.program, "u_modelViewProjMatrix");
+  scene.mvpMatrix = new J3DIMatrix4();
+
+  // Enable all of the vertex attribute arrays.
+  gl.enableVertexAttribArray(0);
+  gl.enableVertexAttribArray(1);
+  gl.enableVertexAttribArray(2);
+
+  // Set up all the vertex attributes for vertices, normals and colors
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.box.vertexObject);
+  gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.box.normalObject);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.box.colorObject);
+  gl.vertexAttribPointer(1, 4, gl.UNSIGNED_BYTE, false, 0, 0);
+
+  // Bind the index array
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.box.indexObject);
+
+  return gl;
+}
+            </code></pre>
+            <pre class="supersmall float_left" style="width:50%"><code>
+function reshape(scene, gl) {
+  var canvas = scene.canvas;
+
+  // Set the viewport and projection matrix for the scene
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  scene.perspectiveMatrix = new J3DIMatrix4();
+  scene.perspectiveMatrix.perspective(30, canvas.width/canvas.height, 1, 10000);
+  scene.perspectiveMatrix.lookat(0, 0, 7, 0, 0, 0, 0, 1, 0);
+}
+
+function drawPicture(scene, gl) {
+  // Make sure the canvas is sized correctly.
+  reshape(scene, gl);
+
+  // Clear the canvas
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Make a model/view matrix.
+  scene.mvMatrix.makeIdentity();
+  scene.mvMatrix.rotate(20, 1,0,0);
+  scene.mvMatrix.rotate(scene.currentAngle, 0,1,0);
+
+  // Construct the normal matrix from the model-view matrix and pass it in
+  scene.normalMatrix.load(scene.mvMatrix);
+  scene.normalMatrix.invert();
+  scene.normalMatrix.transpose();
+  scene.normalMatrix.setUniform(gl, scene.u_normalMatrixLoc, false);
+
+  // Construct the model-view * projection matrix and pass it in
+  scene.mvpMatrix.load(scene.perspectiveMatrix);
+  scene.mvpMatrix.multiply(scene.mvMatrix);
+  scene.mvpMatrix.setUniform(gl, scene.u_modelViewProjMatrixLoc, false);
+
+  // Draw the cube
+  gl.drawElements(gl.TRIANGLES, scene.box.numIndices, gl.UNSIGNED_BYTE, 0);
+
+  scene.currentAngle += scene.incAngle;
+  if (scene.currentAngle > 360)
+    scene.currentAngle -= 360;
+}
+
+window.samples.webgl_spinning_cube = {
+
+  initialize: function(canvas) {
+    var scene = { canvas: canvas };
+
+    canvas.addEventListener('webglcontextlost', handleContextLost, false);
+    canvas.addEventListener('webglcontextrestored', handleContextRestored, false);
+
+    canvas.width = sample_defaults.width;
+    canvas.height = sample_defaults.height;
+
+    var gl = init(scene);
+    if (!gl) {
+      return;
+    }
+
+    scene.currentAngle = 0;
+    scene.incAngle = 0.5;
+
+    var requestId;
+    function animate() {
+      drawPicture(scene, gl);
+      requestId = window.requestAnimFrame(animate, canvas);
+    }
+
+    animate();
+
+    function handleContextLost(e) {
+      e.preventDefault();
+      if (requestId !== undefined) {
+        window.cancelAnimFrame(requestId);
+        requestId = undefined;
+      }
+    }
+
+    function handleContextRestored() {
+      init(scene);
+      animate();
+    }
+  }
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>What we care about</h2>
+            <ol>
+              <li>Setup on CPU</li>
+              <li>Vertex Processor <b>(vertices -&gt; shapes)</b></li>
+              <li>Fragment Processor <b>(pixels -&gt; colored pixels)</b></li>
+            </ol>
+            <img class="white_bg" src="http://www.sjbaker.org/wiki/images/thumb/3/31/Graphics_pipeline.png/800px-Graphics_pipeline.png">
+          </section>
+
+          <section>
+            <h2>CPU: Javascript</h2>
+            <pre class="code medium"><code class="javascript">
+    var gl = WebGLUtils.setupWebGL(scene.canvas);
+
+    scene.program = simpleSetup(
+      gl,
+
+      "webgl_vshader", // id of the vertex shader
+
+      "webgl_bland_fshader", // id of fragment shader
+
+      [ "vPosition"], // Vertex attribute used by the shader
+
+      [ 0, 0, 0, 0 ], 10000); // The clear color and depth values
+
+    scene.box = makeBox(gl);
+
+    // Set up the vertex buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, scene.box.vertexObject);
+    ...
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>CPU: Javascript</h2>
+            <pre class="code medium" style="font-size:19px;"><code class="javascript">
+function drawPicture(scene, gl) {
+  // Clear the canvas
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Construct the model-view * projection matrix
+  scene.mvpMatrix.load(scene.perspectiveMatrix);
+  scene.mvpMatrix.multiply(scene.mvMatrix);
+
+  // Pass the moel-view-proj matrix in to the Shaders
+  scene.mvpMatrix.setUniform(gl, scene.u_modelViewProjMatrix, false);
+
+  // Draw the cube
+  gl.drawElements(gl.TRIANGLES, scene.box.numIndices, gl.UNSIGNED_BYTE,0);
+}
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>Vertex Processor: Vertex Shader</h2>
+            <pre style="font-size:18px; line-height: 24px;" class="code"><code class="javascript">
+    uniform mat4 u_modelViewProjMatrix; // Passed in from CPU
+
+    attribute vec4 vPosition; // Information from vertex
+
+    void main()
+    {
+        gl_Position = u_modelViewProjMatrix * vPosition;
+    }
+            </code></pre>
+            <img class="float_left" style="width: 20%"
+            src="images/Vertices.png">
+            <canvas data-sample="webgl_spinning_wireframe_cube" style="display:inline"></canvas>
+          </section>
+
+          <section>
+            <h3>Fragment Processor: Fragment Shader</h3>
+            <pre style="font-size:18px; line-height: 24px;" class="code"><code class="javascript">
+    void main()
+    {
+        gl_FragColor = vec4(1, 1, 1, 1); // RGBA
+    }
+            </code></pre>
+            <img class="float_left" style="width: 30%"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Rasterisation-triangle_example.svg/450px-Rasterisation-triangle_example.svg.png">
+            <canvas data-sample="webgl_spinning_bland_cube" style="display:inline"></canvas>
+          </section>
+
+          <section>
+            <h2>GLSL</h2>
+            <br/>
+            <br/>
+            <ul>
+              <li>OpenGL Shading Language (GLSL): A high-level shading language based on the syntax of the C programming language.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Vertex Shader</h2>
+            <pre style="font-size:18px; line-height: 24px;" class="code"><code class="cpp">
+    uniform mat4 u_modelViewProjMatrix; // Passed in from CPU
+    uniform mat4 u_normalMatrix;
+    uniform vec3 lightDir;
+
+    attribute vec3 vNormal; // Received from Vertex Buffer
+    attribute vec4 vPosition;
+
+    varying float v_Dot; // Variables output to Fragment Shader
+    varying vec4 v_Color;
+
+    void main()
+    {
+        gl_Position = u_modelViewProjMatrix * vPosition;
+
+        v_Color = vec4(1, 1, 1, 1); // White
+
+        vec4 transNormal = u_normalMatrix * vec4(vNormal, 1);
+        v_Dot = max(dot(transNormal.xyz, lightDir), 0.0);
+    }
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Fragment Shader</h3>
+            <br/>
+            <pre style="font-size:18px; line-height: 24px;" class="code"><code class="cpp">
+    varying float v_Dot; // Passed in from Vertex Shader via Rasterizer
+    varying vec4 v_Color;
+
+    void main()
+    {
+        gl_FragColor = vec4(v_Color.xyz * v_Dot, v_Color.a);
+    }
+            </code></pre>
+            <canvas data-sample="webgl_spinning_colored_cube" style="display:inline"></canvas>
+          </section>
+
+        </section>
+
+        <section>
+          <section>
+            <h1>What is ThreeJS?</h1>
+            <blockquote class="medium" style="margin-top: 80px; width: 100%">
+              The aim of the project is to create a lightweight 3D library with a very low level of complexity — in other words, for dummies.
+              <br/>
+              The library provides &lt;canvas&gt;, &lt;svg&gt; and WebGL renderers.
+            </blockquote>
+            <canvas data-sample="lighted_spinning_cube"></canvas>
+          </section>
+
+          <section>
+            <h3>Intro to ThreeJS: Spinning Cube</h3>
+            <pre class="code"><code>
+  var scene = new THREE.Scene();
+
+  var camera = new THREE.PerspectiveCamera( 30, width / height, 1, 1000 );
+  camera.position.set(0, 3, 7);
+  camera.lookAt( new THREE.Vector3(0,0,0));
+
+  var scale = 2.5;
+  var geometry = new THREE.CubeGeometry( scale, scale, scale );
+  var material = new THREE.MeshBasicMaterial( { color: 0xdddddd } );
+
+  var mesh = new THREE.Mesh( geometry, material );
+  scene.add( mesh );
+
+  var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
+  renderer.setSize( width, height );
+
+  function animate() {
+    requestAnimationFrame( animate, canvas );
+    mesh.rotation.y += 0.008;
+    renderer.render( scene, camera );
+  }
+  animate();
+}
+            </code></pre>
+            <p class="supersmall">16 lines of code</p>
+          </section>
+
+          <section>
+            <h3>Scene</h3>
+            <pre class="medium"><code>
+  var scene = new THREE.Scene();
+            </code></pre>
+            <br/>
+            <p>Encapsulates everything with regard to this rendering</p>
+            <ul>
+              <li>Matrices</li>
+              <li>Camera</li>
+              <li>Models</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Camera</h3>
+            <pre class="medium"><code>
+var camera = new THREE.PerspectiveCamera(30, width/height, 1,1000);
+camera.position.set(0, 3, 7);
+camera.lookAt( new THREE.Vector3(0,0,0));
+            </code></pre>
+            <img src="http://robertokoci.com/images/posts/graphics/game/programming/matrix-unveiled/ProjectionMatrix.png">
+          </section>
+
+          <section>
+            <h3>Geometry</h3>
+            <pre class="medium"><code>
+var scale = 2.5;
+var geometry = new THREE.CubeGeometry( scale, scale, scale );
+            </code></pre>
+            <img class="white_bg" src="http://obviam.net/wp-content/uploads/2011/01/Vertices.png">
+          </section>
+
+          <section>
+            <h3>Materials</h3>
+            <pre class="medium"><code>
+var material = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+            </code></pre>
+            <p>Encapsulates:</p>
+            <ul>
+              <li>Texture</li>
+              <li>Attributes</li>
+              <li>Shaders</li>
+            </p>
+          </section>
+
+          <section>
+            <h3>Mesh</h3>
+            <pre class="medium"><code>
+var mesh = new THREE.Mesh( geometry, material );
+scene.add( mesh );
+            </code></pre>
+            <br/>
+            <ul>
+              <br/>
+              <li>geometry: Vertices -&gt; Shapes</li>
+              <li>material: Pixels -&gt; Colored Pixels</li>
+              <br/>
+              <li>World Matrix</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Renderer</h3>
+            <pre class="medium"><code>
+var renderer = new THREE.WebGLRenderer({canvas: canvas});
+renderer.setSize( width, height );
+            </code></pre>
+            <br/>
+            <canvas data-sample="wireframe_plane"></canvas>
+          </section>
+
+          <section>
+            <h3>request Animation Frame?</h3>
+            <p>Welcome to the Render Loop</p>
+            <pre class="medium"><code>
+  function animate() {
+    requestAnimationFrame( animate );
+
+    mesh.rotation.y += 0.008;
+    renderer.render( scene, camera );
+  }
+  animate();
+            </code></pre>
+            <canvas data-sample="spinning_cube"></canvas>
+          </section>
+
+          <section>
+            <h2>Materials: Phong</h2>
+            <p>Assignment: Add Light</p>
+            <pre class="medium"><code>
+  var material = new THREE.MeshPhongMaterial({ color: 0xdddddd });
+
+  ...
+  var directionalLight = new THREE.DirectionalLight ( 0xffffffff );
+  directionalLight.position.set(0, 3, 7);
+  scene.add( directionalLight );
+            </code></pre>
+            <canvas data-sample="todo_lighted_spinning_cube"></canvas>
+          </section>
+
+          <section>
+            <h3>Materials: Texture</h3>
+            <p>Assignment: Add Texture</p>
+            <pre class="medium"><code>
+var texture = THREE.ImageUtils.loadTexture(
+      'images/checker_large.gif',
+      {},
+      function() {
+        animate();
+      }
+);
+
+//var material = new THREE.MeshPhongMaterial({ color: 0xdddddd });
+var material = new THREE.MeshPhongMaterial({ map: texture });
+            </code></pre>
+            <canvas data-sample="todo_lighted_spinning_textured_cube"></canvas>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>ThreeJS: Loading Meshes</h2>
+            <p>Credit for model goes to <a href="http://www.blendswap.com/?author=3134">Chris Kuhn</a></p>
+            <canvas data-sample="load_startrek_enterprise"></canvas>
+          </section>
+
+          <section>
+            <h2>Blender and ThreeJS</h2>
+            <br/>
+            <ul>
+              <li>Grab models from <a href="http://www.blendswap.com/blends/vehicles/star-trek-collection/">Blendswap: Startrek Collection</a></li>
+              <li>Blender: Content creation tool for 3D models</li>
+              <li>Can export to the Three js file format</li>
+              <li><a href="js/meshes/Startrek_Enterprise.js">Startrek Enterprise Mesh JSON</a></li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>ThreeJS: Importing Mesh</h2>
+            <br/>
+            <pre class="medium"><code>
+// REMOVED
+// var geometry = new THREE.CubeGeometry( 70, 70, 70 );
+// var material = new THREE.MeshBasicMaterial({color: 0xdddddd});
+
+var loader = new THREE.JSONLoader();
+loader.load("js/meshes/Startrek_Enterprise.js", function(geometry, materials) {
+
+  mesh = new THREE.Mesh( geometry, materials[0] );
+  scene.add( mesh );
+  ...
+            </code></pre>
+          </section>
+
+          <section data-state="loaded_apache">
+            <h2>with Textures</h2>
+            <p>Credit for model goes to <a href="http://www.blendswap.com/?author=3134">Chris Kuhn</a></p>
+            <a href="images/FinalApacheTexture.png">Apache Texture File</a>
+            <canvas data-sample="load_apache"></canvas>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>ThreeJS: Particles</h2>
+            <canvas data-sample="particles"></canvas>
+          </section>
+
+          <section>
+            <h2>Primitives</h2>
+            <img style="width:850px;" src="http://3dgep.com/wp-content/uploads/2011/02/OpenGL-Primitives.png">
+          </section>
+
+          <section>
+            <h2>ThreeJS: Particles</h2>
+            <pre class="code medium"><code class="cpp">
+    geometry = new THREE.Geometry();
+
+    for ( i = 0; i < 20000; i ++ ) {
+      var vertex = new THREE.Vector3();
+      vertex.x = Math.random() * 2000 - 1000;
+      vertex.y = Math.random() * 2000 - 1000;
+      vertex.z = Math.random() * 2000 - 1000;
+
+      geometry.vertices.push( vertex );
+    }
+            </code></pre>
+            <br/>
+            <pre class="code medium"><code class="cpp">
+    particles = new THREE.ParticleSystem( geometry, materials[i] );
+
+    scene.add( particles );
+            </code></pre>
+          </section>
+
+          <section>
+            <canvas data-sample="particles"></canvas>
+            <h2>Only 20k, how about a million?</h2>
+            <ul>
+              <li><a href="http://mrdoob.com/lab/javascript/webgl/particles/magicdust.html">Magic Dust Particles</a></li>
+              <li><a href="http://www.html5rocks.com/en/tutorials/webgl/million_letters/million_letters.html">A Million Letters</a></li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>ThreeJS: Normal Mapping</h2>
+            <p>Using the RGB for your <b><u>normal's</u></b> XYZ</p>
+            <canvas data-sample="normal_mapped_plane" class="float_left" style="display:inline"></canvas>
+            <canvas data-sample="wireframe_plane" class="float_left" style="display:inline"></canvas>
+            <img src="images/normal_map_tile.jpg" class="float_left normal_map" style="width:200px">
+          </section>
+          <section>
+            <h3>Old school: Per Vertex Lighting</h3>
+            <canvas data-sample="per_vertex_lighting"></canvas>
+          </section>
+
+          <section>
+            <h2>New school: Per Pixel Lighting</h2>
+            <br/>
+            <img class="float_left" style="width: 25%"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Rasterisation-triangle_example.svg/450px-Rasterisation-triangle_example.svg.png">
+            <!-- <img style="width: 70%" src="images/reflection_vector.gif"> -->
+            <img class="white_bg" src="http://math.hws.edu/graphicsnotes/c4/light_eq.png">
+          </section>
+
+          <section>
+            <h2>Normal Map</h2>
+            <img src="images/normal_map_tile.jpg">
+          </section>
+
+          <section>
+            <h2>Normal Map</h2>
+            <canvas data-sample="normal_mapped_plane" class="float_left" style="display:inline"></canvas>
+            <canvas data-sample="wireframe_plane" class="float_left" style="display:inline"></canvas>
+            <img src="images/normal_map_tile.jpg" class="float_left normal_map" style="width:200px">
+          </section>
+
+          <section>
+            <h2>ThreeJS: Custom Shaders</h2>
+              <pre class="code medium"><code class="javascript">
+  // Grab shader code
+  var vertexShader = $('#normal_map_vs').text();
+  var fragmentShader = $('#normal_map_fs').text();
+
+  // Configure material parameters
+  var parameters = {
+    // Shaders
+    fragmentShader: fragmentShader,
+    vertexShader: vertexShader,
+
+    // Shader Data
+    uniforms: uniforms,
+    attributes: attributes
+  };
+
+  // Create custom shader material
+  var normal_material = new THREE.ShaderMaterial( parameters );
+
+  // Add mesh
+  var mesh = new THREE.Mesh( geometry, normal_material );
+  scene.add( mesh );
+              </code></pre>
+          </section>
+
+          <section>
+            <h2>Showcase: Skin Material</h2>
+            <a href="http://mrdoob.github.com/three.js/examples/webgl_materials_bumpmap_skin.html">WebGL Skin Material</a>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>ThreeJS: Post-Processing</h2>
+            <br/>
+            <br/>
+            <canvas class="float_left" data-sample="spinning_textured_cube"></canvas>
+            <canvas data-sample="blur_post_process"></canvas>
+          </section>
+
+          <section>
+            <h2>Render to Texture</h2>
+            <canvas data-sample="render_to_texture"></canvas>
+            <pre class="code medium"><code class="javascript">
+  var renderTarget = new THREE.WebGLRenderTarget(
+    sample_defaults.width,
+    sample_defaults.height,
+    renderTargetParameters);
+    ...
+
+  renderer.render( worldScene, camera, renderTarget );
+  planeMaterial.uniforms[ "tDiffuse" ].texture = renderTarget;
+  renderer.render( planeScene, camera );
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>2 Pass Blurring</h2>
+            <img src="http://www.gamerendering.com/wp-content/uploads/image13-bluring.jpg">
+          </section>
+
+          <section>
+            <p>Multiple passess...</p>
+            <br/>
+            <pre class="code medium"><code class="javascript">
+  var composer = new THREE.EffectComposer( renderer );
+
+  // 3 Passes...
+  var renderModel = new THREE.RenderPass(scene, camera);
+  var horizontalBlur = new THREE.ShaderPass(horizontalBlurShaders);
+  var verticalBlur = new THREE.ShaderPass(verticalBlurShaders);
+
+  verticalBlur.renderToScreen = true;
+
+  composer.addPass( renderModel );
+  composer.addPass( horizontalBlur );
+  composer.addPass( verticalBlur );
+
+  ...
+  // renderer.render( scene, camera ); REMOVED
+  composer.render(0.1);
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>Showcase: Post-processing Filters</h2>
+            <a href="http://mrdoob.github.com/three.js/examples/webgl_postprocessing.html">Post Processing</a>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h3>Shadow Maps</h3>
+            <canvas data-sample="shadow_map"></canvas>
+          </section>
+
+          <section>
+            <h3>Render to texture</h3>
+            <p>Render a snap shot from the perspective of the light</p>
+            <img class="float_left" style="width:50%"
+            src="http://download.autodesk.com/global/docs/motionbuilder2013/en-us/images/GUID-48D90406-3DCC-4CF6-9A20-6EEC0DD2FBBC-low.png">
+            <canvas data-sample="render_to_texture"></canvas>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h3>Height Map in Vertex Buffer</h3>
+            <canvas data-sample="height_map_image"></canvas>
+            <canvas data-sample="particle_height_map"></canvas>
+          </section>
+        </section>
+
+        <section>
+          <h3>John Carmack on WebGL</h3>
+          <br/>
+          <div class="ytapiplayer" id="ytplayer"
+            data-youtube-url="http://www.youtube.com/v/ozxRRPJzZ78?enablejsapi=1&amp;version=3&amp;border=0"></div>
+        </section>
+
+        <section>
+          <h2>Showcase</h2>
+          <ul style="margin-top: 40px;">
+            <li><a href="http://mrdoob.com/lab/javascript/webgl/voxels_liquid/index.html">Voxel Liquid</a></li>
+            <li><a href="http://codeflow.org/webgl/deferred-irradiance-volumes/www/">Big Boy Lighting: Deferred Irradiance Volumes</a></li>
+            <li><a href="http://www.chromeweblab.com/data-tracer">WebGL Tracert</a></li>
+            <li><a href="http://www.ro.me/">Rome Interactive Movie</a></li>
+            <li><a href="http://mrdoob.com/projects/code-editor/#B/bVRRT9swEH4uv8IrL2EqTuhUjTUtE2PdmDQ0BEjTHt342ngkduY4LQX1v+/sxJBAoqq27z7fd3e+u9m7r78u7v5cL0hq8uzsYFYvg1kKjOM6mOVgGElSpksw82FlVsenQ6cozS4DuxssFd+RJ7sbLFlyv9aqkvw4UZnSU3K4cl/s1DnTayGnJKqPagN6lantlKSCc5BOurfGQ299FjaezCxLTZxoURhS6mQ+TI0ppmGYa67Ukq6FSaslTVQemlQD0L9luKxExptjLiSKhmdo3tlomTs7sNxhSLZK3zMXAVkpjZFrlQNZVmt0siZLFAe6VmqdgaMqQgcSVR6KsqygDDnmTGSfBZ9/mHw6jQ6Tk7G1LlYkIFshudpSISXo34KblMzncxKRI/LUpyMF0yBNSxZ3YJcg1ql5hauFMdm7LONn1w3DaFgOmo1ImYCEEcEbHDTo2OvXgMEavRuRnBnQgmW4gzKNXXaEFCY4cmAmhUXYkz2uKpkYoSSpIU0xuL+aEh2UsCV3lzeLBb0GXRaAFzZw4bQB+TgZ9UQf9oQ6Iif4iyLMWNwioIUqhXWBPiLXJIpqxwYu0g77rZV4xwc+4g7kR6JKlgLXSn5v9AEZRxESe1afn869K0zVF1aK5KrRBvioTR9ED5H7bJwaVhq9nhKjK2gJfgq0ZSOfkjHZE++jfRn2IMpLyArQHcbzZ3HzMIMXIC0ThiX6gBfeCHd9Qpu5cfySNso4D9rM3iFbEm8CD3qqx2erZc7d9YZ8AXaMXTC5YeVNo/JxeSjFOXQrHqGnk0Z9neGpuEqq3HaInSOUFQXau0hxNgTPbUC5yhcZWJS/tu+W93PZY4U3Xv3DhjfnTo6Ib/YZA4/rJIxqZRzGvchXVFOptmjqPYkoFsYk7oHu+qAnr7JH603g27ppuXYIrYk3C+tJipPVzvr/">Code Editor</a></li>
+            <li><a href="http://cnn-ecosphere.com/">CNN EcoSphere</a></li>
+            <li><a href="http://dl.dropbox.com/u/6213850/WebGL/nyanCat/nyan.html">WebGL Nyan Cat</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>For next time...</h2>
+          <ul>
+            <li>GPGPU</li>
+            <li>Shadows</li>
+            <li>Animations</li>
+            <li>Terrain Rendering</li>
+            <li>Dynamic Level of Detail</li>
+            <li>Culling</li>
+            <li>Geometry Shaders</li>
+            <li>and more ...</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Credits</h2>
+          <ul>
+            <li><a href="http://www.khronos.org/webgl/">Khronos WebGL</a></li>
+            <li><a href="https://github.com/mrdoob/three.js/">Three JS</a></li>
+            <li><a href="https://www.e-education.psu.edu/geog486/l7_p9.html">Penn State Geography 486</a></li>
+            <li><a href="http://robertokoci.com/world-view-projection-matrix-unveiled/">Roberto Koci: wvpMatrix</a></li>
+            <li><a href="http://www.upvector.com/?section=Tutorials&subsection=Intro%20to%20Shaders">Up Vector</a></li>
+            <li><a href="http://www.chromeexperiments.com">Chrome Experiments</a></li>
+            <li><a href="http://www.wikipedia.com">Wikipedia</a></li>
+          </ul>
+        </section>
+
+      </div>
+
+      <!-- The navigational controls UI -->
+      <aside class="controls">
+        <a class="left" href="#">&#x25C4;</a>
+        <a class="right" href="#">&#x25BA;</a>
+        <a class="up" href="#">&#x25B2;</a>
+        <a class="down" href="#">&#x25BC;</a>
+      </aside>
+
+      <!-- Presentation progress bar -->
+      <div class="progress"><span></span></div>
+    </div>
+
+    <!-- Shaders -->
+    <script id="webgl_vshader" type="x-shader/x-vertex">
+      uniform mat4 u_modelViewProjMatrix;
+      uniform mat4 u_normalMatrix;
+      uniform vec3 lightDir;
+
+      attribute vec3 vNormal;
+      attribute vec4 vColor;
+      attribute vec4 vPosition;
+
+      varying float v_Dot;
+      varying vec4 v_Color;
+
+      void main()
+      {
+          gl_Position = u_modelViewProjMatrix * vPosition;
+          v_Color = vec4(1 , 1, 1, 1);
+          vec4 transNormal = u_normalMatrix * vec4(vNormal, 1);
+          v_Dot = max(dot(transNormal.xyz, lightDir), 0.0);
+      }
+    </script>
+
+    <script id="webgl_fshader" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying float v_Dot;
+      varying vec4 v_Color;
+
+      void main()
+      {
+          gl_FragColor = vec4(v_Color.xyz * v_Dot, v_Color.a);
+      }
+    </script>
+
+    <script id="webgl_bland_fshader" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying float v_Dot;
+      varying vec4 v_Color;
+
+      void main()
+      {
+          gl_FragColor = vec4(1, 1, 1, 1);
+      }
+    </script>
+
+    <script id="normal_map_vs" type="x-shader/x-vertex">
+      attribute vec3 tangent;
+
+      varying vec4 vPositionV;
+      varying vec3 vNormalV;
+      varying vec3 vTangentV;
+      varying vec2 vTexCoord;
+
+      void main(void) {
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vPositionV = modelViewMatrix * vec4(position, 1.0);
+        vNormalV = (modelViewMatrix * vec4(normal, 0.0)).xyz;
+        vTangentV = (modelViewMatrix * vec4(tangent, 0.0)).xyz;
+        vTexCoord = uv;
+      }
+    </script>
+
+    <script id="normal_map_fs" type="x-shader/x-fragment">
+      #ifdef GL_ES
+      precision highp float;
+      #endif
+
+      uniform sampler2D map;
+      uniform float uTime;
+
+      varying vec4 vPositionV;
+      varying vec3 vNormalV;
+      varying vec3 vTangentV;
+      varying vec2 vTexCoord;
+
+      void main(void) {
+        vec3 normalT = texture2D(map, vTexCoord).xyz;
+        normalT.y = 1.0 - normalT.y;
+        normalT = 2.0 * normalT - vec3(1.0, 1.0, 1.0);
+        normalT.z *= 10.0;
+
+        vec3 binormalV = cross(vNormalV, vTangentV);
+        vec3 normalV = normalT.x * vTangentV + normalT.y * binormalV + normalT.z * vNormalV;
+
+        normalV = normalize(normalV);
+        vec3 lightV = normalize(vec3(10.0 * cos(uTime), 0.0, 10.0 * sin(uTime)));
+
+        float d = dot(normalV, lightV);
+        float s = dot(reflect(-lightV, normalV), normalize(-vPositionV.xyz));
+        s = pow(s, 30.0);
+
+        vec3 diffuse = vec3(1, 1, 1);
+        vec3 color = diffuse * (0.1 + 0.5 * d + 0.4 * s);
+
+        gl_FragColor = vec4(color, 1.0);
+      }
+    </script>
+
+
+    <script src="lib/js/head.min.js"></script>
+    <script>
+      head.js(
+        "lib/js/jquery.min.js",
+        "lib/js/jquery.hotkeys.js",
+        "lib/js/underscore.min.js",
+        "lib/js/swfobject.js",
+        "lib/js/dat.gui.js",
+        "lib/js/EventEmitter.js",
+
+        "lib/js/three.js",
+        "lib/js/three/EffectComposer.js",
+        "lib/js/three/RenderPass.js",
+        "lib/js/three/BloomPass.js",
+        "lib/js/three/ShaderPass.js",
+        "lib/js/three/MaskPass.js",
+
+        // three shaders
+        "lib/js/three/shaders/CopyShader.js",
+        "lib/js/three/shaders/BasicShader.js",
+        "lib/js/three/shaders/DotScreenShader.js",
+        "lib/js/three/shaders/UnpackDepthRGBAShader.js",
+        "lib/js/three/shaders/HorizontalBlurShader.js",
+        "lib/js/three/shaders/VerticalBlurShader.js",
+
+        // js files needed for WebGL specific samples (excluding three js)
+        "lib/js/J3DI.js",
+        "lib/js/J3DIMath.js",
+        "lib/js/webgl-utils.js",
+        "lib/js/webgl-debug.js",
+
+        // App specific js
+        "js/reveal.min.js",
+        "js/stats_bootstrap.js",
+        "js/samples.js",
+        "js/dat.gui.bootstrap.js",
+
+        function() {
+          // Full list of configuration options available here:
+          // https://github.com/hakimel/reveal.js#configuration
+          Reveal.initialize({
+            controls: true,
+            progress: true,
+            history: true,
+
+            transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/linear(2d)
+
+            // Optional libraries used to extend on reveal.js
+            dependencies: [
+              { src: 'lib/js/highlight.js', async: true, callback: function() { window.hljs.initHighlightingOnLoad(); } },
+              { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+              { src: 'lib/js/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+              { src: 'lib/js/data-markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+              { src: 'socket.io/socket.io.js', async: true, condition: function() { return window.location.host === 'localhost:1947'; } },
+              { src: 'plugin/speakernotes/client.js', async: true, condition: function() { return window.location.host === 'localhost:1947'; } },
+              { src: 'js/youtube.js', async: true, condition: function() { return $("#ytplayer").length > 0 } },
+            ]
+          });
+        });
+
+    </script>
+  </body>
+</html>
