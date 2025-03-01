@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>問い合わせ一覧</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <h1>問い合わせ一覧</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>名前</th>
+        <th>メッセージ</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id="contactList"></tbody>
+  </table>
+  
+  <script>
+    function displayContacts() {
+      let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+      let contactList = document.getElementById('contactList');
+      contactList.innerHTML = '';
+      
+      contacts.forEach((contact, index) => {
+        let row = document.createElement('tr');
+        let nameCell = document.createElement('td');
+        nameCell.textContent = contact.name;
+        let messageCell = document.createElement('td');
+        messageCell.textContent = contact.message;
+        let deleteCell = document.createElement('td');
+        let deleteButton = document.createElement('button');
+        deleteButton.textContent = '削除';
+        deleteButton.onclick = function() {
+          deleteContact(index);
+        };
+        deleteCell.appendChild(deleteButton);
+        row.appendChild(nameCell);
+        row.appendChild(messageCell);
+        row.appendChild(deleteCell);
+        contactList.appendChild(row);
+      });
+    }
+
+    function deleteContact(index) {
+      let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+      contacts.splice(index, 1);
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+      displayContacts();
+    }
+
+    document.addEventListener('DOMContentLoaded', displayContacts);
+  </script>
+</body>
+</html>
