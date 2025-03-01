@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>問い合わせ一覧</title>
+</head>
+<body>
+  <h1>問い合わせ一覧</h1>
+  <ul id="contactList"></ul>
+  
+  <script>
+    function displayContacts() {
+      let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+      let contactList = document.getElementById('contactList');
+      contactList.innerHTML = '';
+      
+      contacts.forEach((contact) => {
+        let contactItem = document.createElement('li');
+        contactItem.textContent = `名前: ${contact.name}, メール: ${contact.email}, メッセージ: ${contact.message}`;
+        contactList.appendChild(contactItem);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', displayContacts);
+  </script>
+</body>
+</html>
