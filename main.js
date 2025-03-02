@@ -51,9 +51,15 @@ scene.add(pointLight);
 let pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
 scene.add(pointLightHelper);
 
-// アニメーションループ追加
 function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    //点光源を回転
+        pointLight.position.set(
+            200 * Math.sin(Date.now() / 500),
+            200 * Math.sin(Date.now() / 1000),
+            200 * Math.cos(Date.now() / 500)
+        );
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
 }
+
 animate();
