@@ -34,5 +34,9 @@ let ballMaterial = new THREE.MeshPhysicalMaterial();
 let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
 scene.add(ballMesh);
 
+//平行光源の追加
+let directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+scene.add(directionalLight);
+
 //レンダリングの追加
 renderer.render(scene, camera);
