@@ -43,7 +43,13 @@ scene.add(directionalLight);
 // 点光源追加
 pointLight = new THREE.PointLight(0xffffff, 2);
 pointLight.position.set(-200, -200, -200);
+pointLight.decay = 1;
+pointLight.power = 1000;
 scene.add(pointLight);
+
+// 点光源のヘルパー追加
+let pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
+scene.add(pointLightHelper);
 
 // アニメーションループ追加
 function animate() {
