@@ -53,13 +53,13 @@ scene.add(pointLightHelper);
 
 function animate() {
     //点光源を回転
-        pointLight.position.set(
-            200 * Math.sin(Date.now() / 500),
-            200 * Math.sin(Date.now() / 1000),
-            200 * Math.cos(Date.now() / 500)
-        );
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
+    pointLight.position.set(
+        200 * Math.sin(Date.now() / 500),
+        200 * Math.sin(Date.now() / 1000),
+        200 * Math.cos(Date.now() / 500)
+    );
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
 }
 
 animate();
