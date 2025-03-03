@@ -1,5 +1,5 @@
 // Three.jsのインポート
-import * as THREE from './Three-js-master/node_modules/three/build/three.module.js';
+import * as THREE from '../Three-js-master/node_modules/three/build/three.module.js';
 
 // グローバル宣言
 let scene, camera, renderer, pointLight;
