@@ -1,8 +1,9 @@
 // Three.jsのインポート
 import * as THREE from '../Three-js-master/node_modules/three/build/three.module.js';
+import {OrbitControls} from '../Three-js-master/node_modules/three/examples/jsm/controls/OrbitControls.js';
 
 // グローバル宣言
-let scene, camera, renderer, pointLight;
+let scene, camera, renderer, pointLight, controls;
 
 // シーン追加
 scene = new THREE.Scene();
@@ -50,6 +51,9 @@ scene.add(pointLight);
 // 点光源のヘルパー追加
 let pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
 scene.add(pointLightHelper);
+
+//マウス操作追加
+controls = new OrbitControls(camera, renderer.domElement);
 
 function animate() {
     //点光源を回転
