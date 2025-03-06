@@ -1,6 +1,6 @@
 // Three.jsのインポート
-import * as THREE from '../Three-js-master/node_modules/three/build/three.module.js';
-import {OrbitControls} from '../Three-js-master/node_modules/three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from "../Three-js-master/node_modules/three/build/three.module.js";
+import {OrbitControls} from "../Three-js-master/node_modules/three/examples/jsm/controls/OrbitControls.js";
 
 // グローバル宣言
 let scene, camera, renderer, pointLight, controls;
@@ -22,6 +22,9 @@ renderer = new THREE.WebGLRenderer({alpha:true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+//テクスチャ追加
+let texture = new THREE.TextureLoader().load("earth.jpg");
+
 // ジオメトリ（骨格）追加
 let ballGeometry = new THREE.SphereGeometry(
     100, //半径
@@ -30,7 +33,7 @@ let ballGeometry = new THREE.SphereGeometry(
 );
 
 // マテリアル（色）追加
-let ballMaterial = new THREE.MeshPhysicalMaterial();
+let ballMaterial = new THREE.MeshPhysicalMaterial({map: texture});
 
 // メッシュ化（骨格と色の組み合わせ）追加
 let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
