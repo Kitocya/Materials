@@ -4,8 +4,10 @@ import {OrbitControls} from "../Three-js-master/node_modules/three/examples/jsm/
 
 // グローバル宣言
 let scene, camera, renderer, pointLight, controls;
+window.addEventListener("load", init);
 
-// シーン追加
+function init() {
+    // シーン追加
 scene = new THREE.Scene();
 
 // カメラ追加
@@ -20,10 +22,11 @@ camera.position.set(0, 0, 500);
 // レンダラー追加
 renderer = new THREE.WebGLRenderer({alpha:true});
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
 // テクスチャ追加
-let texture = new THREE.TextureLoader().load("earth.jpg");
+let texture = new THREE.TextureLoader().load("./Three.js/earth.jpg");
 
 // ジオメトリ（骨格）追加
 let ballGeometry = new THREE.SphereGeometry(
@@ -33,7 +36,7 @@ let ballGeometry = new THREE.SphereGeometry(
 );
 
 // マテリアル（色）追加
-let ballMaterial = new THREE.MeshPhysicalMaterial({ map: texture });
+let ballMaterial = new THREE.MeshPhysicalMaterial({map: texture});
 
 // メッシュ化（骨格と色の組み合わせ）追加
 let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -58,6 +61,19 @@ scene.add(pointLightHelper);
 // マウス操作追加
 controls = new OrbitControls(camera, renderer.domElement);
 
+window.addEventListener("resize", onWindowResize);
+animate();
+}
+
+// ブラウザのリサイズ
+function onWindowResize() {
+    // レンダラーのサイズを随時更新
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    // カメラのアスペクト比を正す
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}
+
 function animate() {
     // 点光源を回転
     pointLight.position.set(
@@ -68,5 +84,3 @@ function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
-
-animate();
