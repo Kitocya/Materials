@@ -23,7 +23,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // テクスチャ追加
-let textures = new THREE.TextureLoader().load("earth.jpg");
+let texture = new THREE.TextureLoader().load("earth.jpg");
 
 // ジオメトリ（骨格）追加
 let ballGeometry = new THREE.SphereGeometry(
@@ -33,7 +33,8 @@ let ballGeometry = new THREE.SphereGeometry(
 );
 
 // マテリアル（色）追加
-let ballMaterial = new THREE.MeshPhysicalMaterial({map: textures});
+let ballMaterial = new THREE.MeshPhysicalMaterial();
+//let ballMaterial = new THREE.MeshPhysicalMaterial({ map: texture });
 
 // メッシュ化（骨格と色の組み合わせ）追加
 let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
