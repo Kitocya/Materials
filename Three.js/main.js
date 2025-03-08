@@ -33,8 +33,7 @@ let ballGeometry = new THREE.SphereGeometry(
 );
 
 // マテリアル（色）追加
-let ballMaterial = new THREE.MeshPhysicalMaterial();
-//let ballMaterial = new THREE.MeshPhysicalMaterial({ map: texture });
+let ballMaterial = new THREE.MeshPhysicalMaterial({ map: texture });
 
 // メッシュ化（骨格と色の組み合わせ）追加
 let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
