@@ -22,18 +22,18 @@ renderer = new THREE.WebGLRenderer({alpha:true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-//テクスチャ追加
-let texture = new THREE.TextureLoader().load("earth.jpg");
+// テクスチャ追加
+let textures = new THREE.TextureLoader().load("earth.jpg");
 
 // ジオメトリ（骨格）追加
 let ballGeometry = new THREE.SphereGeometry(
-    100, //半径
-    64, //滑らかさ幅
-    32 //滑らかさ高
+    100, // 半径
+    64, // 滑らかさ幅
+    32 // 滑らかさ高
 );
 
 // マテリアル（色）追加
-let ballMaterial = new THREE.MeshPhysicalMaterial({map: texture});
+let ballMaterial = new THREE.MeshPhysicalMaterial({map: textures});
 
 // メッシュ化（骨格と色の組み合わせ）追加
 let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -55,18 +55,18 @@ scene.add(pointLight);
 let pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
 scene.add(pointLightHelper);
 
-//マウス操作追加
+// マウス操作追加
 controls = new OrbitControls(camera, renderer.domElement);
 
 function animate() {
-    //点光源を回転
-        pointLight.position.set(
-            200 * Math.sin(Date.now() / 500),
-            200 * Math.sin(Date.now() / 1000),
-            200 * Math.cos(Date.now() / 500)
-        );
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
+    // 点光源を回転
+    pointLight.position.set(
+        200 * Math.sin(Date.now() / 500),
+        200 * Math.sin(Date.now() / 1000),
+        200 * Math.cos(Date.now() / 500)
+    );
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
 }
 
 animate();
